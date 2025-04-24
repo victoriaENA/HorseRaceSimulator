@@ -10,7 +10,7 @@ public class GUI extends JPanel {
     private JButton setTrackButton;
 
     private JPanel trackDisplay;
-    //private RaceGUI race;  // Reference to the Race class
+    private RaceGUI race;  // Reference to the Race class
 
     public GUI() {
         setLayout(new BorderLayout());
@@ -44,7 +44,7 @@ public class GUI extends JPanel {
         setTrackButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //showTrack();
+                showTrack();
             }
 
         });
@@ -70,6 +70,71 @@ public class GUI extends JPanel {
             frame.setVisible(true);
         });
     }
+
+    private void showTrack() {
+
+
+        trackDisplay.removeAll();
+
+
+        int lanes = Integer.parseInt(laneField.getText());
+        int length = Integer.parseInt(lengthField.getText());
+
+
+        // Ensure minimum lanes are 2
+        lanes = Math.max(lanes, 2);
+
+
+        race = new RaceGUI(length, lanes);
+
+        for (int lane = 1; lane <= lanes; lane++) {
+
+
+            HorseGUI horse = new HorseGUI(
+                    '♞', "Horse " + lane,
+                    Math.round((0.2 + (Math.random() * 0.6)) * 10) / 10.0
+            );
+
+
+            race.addHorse(horse, lane);
+
+
+        }
+
+
+        updateTrackDisplay();  // Show horses at the starting line
+
+
+    }
+
+
+    // Updates the GUI with the current race state
+    private void updateTrackDisplay() {
+        trackDisplay.removeAll();  // Clear the previous race track
+
+
+        // Get the race track display as a List of Strings
+        List<String> raceTrack = race.getRaceTrackDisplay();
+
+        // Add each line of the race track to the GUI panel
+        for (String line : raceTrack) {
+            JLabel laneLabel = new JLabel(line);
+
+
+            laneLabel.setFont(new Font("Monospaced", Font.PLAIN, 20));
+
+
+            trackDisplay.add(laneLabel);
+        }
+
+
+        // Refresh the GUI
+        trackDisplay.revalidate();
+        trackDisplay.repaint();
+    }
+
+}
+
 
 
 }

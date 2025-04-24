@@ -57,7 +57,7 @@ public class RaceGUI
      * then repeatedly moved forward until the 
      * race is finished
      */
-    public void startRace()
+    /*public void startRace()
     {
         boolean finished = false;
 
@@ -118,7 +118,7 @@ public class RaceGUI
         }
 
         printWinner(activeCount);
-    }
+    } */
 
     /***
      * Print race results after completion -- CHANGE
@@ -185,83 +185,63 @@ public class RaceGUI
     {
         return theHorse.getDistanceTravelled() >= raceLength; // CHANGE: Allow distance to exceed race length
     }
-    
-    /***
-     * Print the race on the terminal
-     */
-    private void printRace()
-    {
-        System.out.print("\033\143");  //clear the terminal window
-        
-        multiplePrint('=',raceLength+3); //top edge of track
-        System.out.println();
-        
-        for (HorseGUI horse : horses) { // CHANGE: Loop through list instead of fixed lanes
-            if (horse != null) {
-                printLane(horse);
-            } else {
-                System.out.print("|");
-                multiplePrint(' ', raceLength);  // Printing the empty lane
-                System.out.println(" |");
-            }
-        }
-        
-        multiplePrint('=',raceLength+3); //bottom edge of track
-        System.out.println();    
-    }
-    
+
     /**
-     * print a horse's lane during the race
-     * for example
-     * |           X                      |
-     * to show how far the horse has run
-     * check for null lane is already done in the printRace method and since it is 
-     * ONLY being called there, not necessary here/ seemed redundant
+     * Creates a formatted list of race track display strings for GUI rendering
+     * @return List of strings representing the track display
      */
-    private void printLane(HorseGUI theHorse)
-    {
-        //calculate how many spaces are needed before
-        //and after the horse
-        int spacesBefore = theHorse.getDistanceTravelled();
-        int spacesAfter = raceLength - spacesBefore ;
-        
-        //print a | for the beginning of the lane
-        System.out.print('|');
-        
-        //print the spaces before the horse
-        multiplePrint(' ',spacesBefore);
-        
-        //if the horse has fallen then print dead
-        //else print the horse's symbol
-        if(theHorse.hasFallen())
-        {
-            System.out.print("X");
+    public List<String> getRaceTrackDisplay() {
+        List<String> trackDisplay = new ArrayList<>();
+        int trackWidth = raceLength + 2; // Track length plus borders
+
+        // Top border
+        trackDisplay.add(multiplePrint('=', trackWidth));
+
+        // Generate lane representations
+        for (HorseGUI horse : horses) {
+            StringBuilder lane = new StringBuilder();
+            lane.append('|'); // Start lane border
+
+            int spacesBefore = (horse != null) ? horse.getDistanceTravelled() : 0;
+            int spacesAfter = raceLength - spacesBefore;
+
+            // Add spaces before the horse
+            lane.append(multiplePrint(' ', spacesBefore));
+
+            // Add horse symbol or fallen marker
+            lane.append((horse != null) ? (horse.hasFallen() ? "X" : horse.getSymbol()) : " ");
+
+            // Add spaces after the horse
+            lane.append(multiplePrint(' ', spacesAfter));
+
+            lane.append('|'); // End lane border
+
+            // Include horse details if present
+            if (horse != null) {
+                lane.append(" " + horse.getName() + " (" + horse.getConfidence() + ")");
+            }
+
+            trackDisplay.add(lane.toString());
         }
-        else
-        {
-            System.out.print(theHorse.getSymbol());
-        }
-        
-        //print the spaces after the horse
-        multiplePrint(' ',spacesAfter > 0 ? spacesAfter : 0);
-        
-        //print the | for the end of the track
-        System.out.print('|');
-        System.out.printf(theHorse.getName() + " (Current confidence " + theHorse.getConfidence() + ")");
-        System.out.println();  // ensure new line formatting is correct
+
+        // Bottom border
+        trackDisplay.add(multiplePrint('=', trackWidth));
+
+        return trackDisplay;
     }
-        
-    
-    /***
-     * print a character a given number of times.
-     * e.g. printmany('x',5) will print: xxxxx
-     * 
-     * @param aChar the character to Print
+
+    /**
+     * Generates a repeated string of a given character
+     *
+     * @param aChar the character to repeat
+     * @param times the number of repetitions
+     * @return the formatted string
      */
-    private void multiplePrint(char aChar, int times)
-    {
-         for (int i = 0; i < times; i++) {
-            System.out.print(aChar);
+    private String multiplePrint(char aChar, int times) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < times; i++) {
+            result.append(aChar);
         }
+        return result.toString();
     }
 }
