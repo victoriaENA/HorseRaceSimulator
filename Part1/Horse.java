@@ -72,29 +72,49 @@ public class Horse
     }
 
 
-    public void fall()
-    {
-        
-    }
-    
+    /**
+     * Resets the horse to the start of the race
+     */
     public void goBackToStart()
     {
-        
+        distanceTravelled = 0;
+        hasFallen = false;
     }
 
+    /**
+     * Sets the horse as fallen
+     */
+    public void fall()
+    {
+        hasFallen = true;
+    }
+
+    /**
+     * Increments the distance travelled by the horse by 1
+     */
     public void moveForward()
     {
-        
+        distanceTravelled++;
     }
 
+    /**
+     * Sets the confidence rating of the horse to the given value
+     */
     public void setConfidence(double newConfidence)
     {
-        
+        if (newConfidence >= 0.1 && newConfidence <= 0.9) {
+            confidence = newConfidence;
+        } else {
+            System.out.println("Invalid confidence: must be between 0.1 and 0.9. Value not updated.");
+        }
     }
-    
+
+    /**
+     * Sets the horse’s symbol to the specified character
+     */
     public void setSymbol(char newSymbol)
     {
-        
+        symbol = newSymbol;
     }
-    
+
 }
