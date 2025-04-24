@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.List;
 
 public class GUI extends JPanel {
@@ -310,14 +311,16 @@ public class GUI extends JPanel {
     private void showCustomizationOptions() {
         customizationPanel.removeAll();  // Clear previous options
 
+        // Create a scrollable panel
+        JPanel customizationContainer = new JPanel();
+        customizationContainer.setLayout(new BoxLayout(customizationContainer, BoxLayout.Y_AXIS));  // Vertical stacking
+
+        JScrollPane scrollPane = new JScrollPane(customizationContainer);
+        scrollPane.setPreferredSize(new Dimension(400, 300));
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
         // Array of available symbols (chess pieces and others)
-        Character[] symbols = {
-                '♞', // Black knight
-                '♚', // Black king
-                '♛', // Black queen
-                '★', // Star
-                '⚡', // Lightning
-        };
+        Character[] symbols = {'♞', '♚', '♛', '★', '⚡'};
 
         for (HorseGUI horse : race.getHorses()) {
             if (horse != null) {
@@ -325,39 +328,66 @@ public class GUI extends JPanel {
 
                 JLabel horseLabel = new JLabel("Customize " + horse.getName() + ": ");
 
-                //Breed
+                // Breed Selector
                 JComboBox<HorseBreed> breedSelector = new JComboBox<>(HorseBreed.values());
                 breedSelector.setSelectedItem(horse.getBreed());
 
                 // Color Selector
                 JComboBox<String> colorSelector = new JComboBox<>(new String[]{"Black", "White", "Brown", "Grey"});
-                colorSelector.setSelectedItem(horse.getCoatColor());  // Set the current coat color
+                colorSelector.setSelectedItem(horse.getCoatColor());
 
-                //Symbol
+                // Symbol Selector
                 JComboBox<Character> symbolSelector = new JComboBox<>(symbols);
                 symbolSelector.setSelectedItem(horse.getSymbol());
 
+                // Filter Equipment Types
+                HorseEquipment[] saddles = Arrays.stream(HorseEquipment.values())
+                        .filter(e -> e.name().contains("SADDLE"))
+                        .toArray(HorseEquipment[]::new);
+
+                HorseEquipment[] shoes = Arrays.stream(HorseEquipment.values())
+                        .filter(e -> e.name().contains("SHOES"))
+                        .toArray(HorseEquipment[]::new);
+
+                HorseEquipment[] accessories = Arrays.stream(HorseEquipment.values())
+                        .filter(e -> !(e.name().contains("SADDLE") || e.name().contains("SHOES")))
+                        .toArray(HorseEquipment[]::new);
+
+                // Create Equipment Selectors with Correct Options
+                JComboBox<HorseEquipment> saddleSelector = new JComboBox<>(saddles);
+                saddleSelector.setSelectedItem(horse.getSaddle());
+
+                JComboBox<HorseEquipment> shoesSelector = new JComboBox<>(shoes);
+                shoesSelector.setSelectedItem(horse.getHorseshoes());
+
+                JComboBox<HorseEquipment> accessorySelector = new JComboBox<>(accessories);
+                accessorySelector.setSelectedItem(horse.getAccessory());
+
+                // Buttons for setting values
                 JButton confirmButton = new JButton("Set Breed");
                 JButton setColorButton = new JButton("Set Color");
                 JButton setSymbolButton = new JButton("Set Symbol");
+                JButton setEquipmentButton = new JButton("Set Equipment");
 
-
-                confirmButton.addActionListener(e ->
-                        horse.setBreed((HorseBreed) breedSelector.getSelectedItem())
-                );
-
+                confirmButton.addActionListener(e -> horse.setBreed((HorseBreed) breedSelector.getSelectedItem()));
                 setColorButton.addActionListener(e -> {
-                    String selectedColor = (String) colorSelector.getSelectedItem();
-                    horse.setCoatColor(selectedColor);
-                    updateTrackDisplayCustom(); // Refresh to show new color
-
+                    horse.setCoatColor((String) colorSelector.getSelectedItem());
+                    updateTrackDisplayCustom();
                 });
-
                 setSymbolButton.addActionListener(e -> {
                     horse.setSymbol((Character) symbolSelector.getSelectedItem());
                     updateTrackDisplayCustom();
                 });
 
+                // Update equipment selections
+                setEquipmentButton.addActionListener(e -> {
+                    horse.setSaddle((HorseEquipment) saddleSelector.getSelectedItem());
+                    horse.setHorseshoes((HorseEquipment) shoesSelector.getSelectedItem());
+                    horse.setAccessory((HorseEquipment) accessorySelector.getSelectedItem());
+                    updateTrackDisplayCustom();
+                });
+
+                // Adding components to the horse's customization panel
                 horsePanel.add(horseLabel);
                 horsePanel.add(breedSelector);
                 horsePanel.add(confirmButton);
@@ -365,12 +395,24 @@ public class GUI extends JPanel {
                 horsePanel.add(setColorButton);
                 horsePanel.add(symbolSelector);
                 horsePanel.add(setSymbolButton);
-                customizationPanel.add(horsePanel);
+
+                // Adding equipment selectors
+                horsePanel.add(new JLabel("Saddle:"));
+                horsePanel.add(saddleSelector);
+                horsePanel.add(new JLabel("Horseshoes:"));
+                horsePanel.add(shoesSelector);
+                horsePanel.add(new JLabel("Accessory:"));
+                horsePanel.add(accessorySelector);
+                horsePanel.add(setEquipmentButton);
+
+                customizationContainer.add(horsePanel);  // Add the panel inside the scrollable container
             }
         }
 
-        // Toggle visibility on click
-        customizationPanel.setVisible(!customizationPanel.isVisible());
+        // Wrap the entire customization panel in a scrollable view
+        customizationPanel.setLayout(new BorderLayout());
+        customizationPanel.add(scrollPane, BorderLayout.CENTER);
+        customizationPanel.setVisible(true);
         customizationPanel.revalidate();
         customizationPanel.repaint();
     }

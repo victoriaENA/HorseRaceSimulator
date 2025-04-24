@@ -15,6 +15,9 @@ public class HorseGUI
     private double confidence;         // (between 0 and 1)
     private HorseBreed breed;           // The breed of the horse (e.g., THOROUGHBRED, ARABIAN)
     private String coatColor;
+    private HorseEquipment saddle;
+    private HorseEquipment horseshoes;
+    private HorseEquipment accessory;
 
     //Constructor of class Horse
     /**
@@ -29,7 +32,9 @@ public class HorseGUI
         this.confidence = confidence;
         distanceTravelled = 0; // Ensure horse starts at position 0
         hasFallen = false;     // Horse has not fallen initially
-       
+        this.saddle = HorseEquipment.STANDARD_SADDLE;
+        this.horseshoes = HorseEquipment.RUBBER_SHOES;
+        this.accessory = HorseEquipment.NONE;
     }
 
     //Other methods of class Horse
@@ -150,5 +155,39 @@ public class HorseGUI
         this.coatColor = newColor;
 
     }
+
+
+    public void setSaddle(HorseEquipment saddle) {
+        this.saddle = saddle;
+    }
+
+    public void setHorseshoes(HorseEquipment horseshoes) {
+        this.horseshoes = horseshoes;
+    }
+
+    public void setAccessory(HorseEquipment accessory) {
+        this.accessory = accessory;
+    }
+
+    public double getSpeedModifier() {
+        return saddle.getSpeedModifier() * horseshoes.getSpeedModifier() * accessory.getSpeedModifier();
+    }
+
+    public double getStabilityModifier() {
+        return saddle.getStabilityModifier() * horseshoes.getStabilityModifier() * accessory.getStabilityModifier();
+    }
+
+    public HorseEquipment getSaddle() {
+        return saddle;
+    }
+
+    public HorseEquipment getHorseshoes() {
+        return horseshoes;
+    }
+
+    public HorseEquipment getAccessory() {
+        return accessory;
+    }
+
 
 }

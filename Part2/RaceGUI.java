@@ -179,7 +179,7 @@ public class RaceGUI
             double speedModifier = 1.0;
             double fallRiskModifier = 1.0;
 
-            // 🔹 Adjust values based on track conditions
+            // Adjust values based on track conditions
             switch (trackCondition) {
                 case MUDDY:
                     speedModifier = 0.7;  // Slower speed
@@ -194,6 +194,10 @@ public class RaceGUI
                     fallRiskModifier = 0.8; // Reduced fall risk
                     break;
             }
+
+            // Apply equipment modifiers
+            speedModifier *= theHorse.getSpeedModifier();
+            fallRiskModifier *= theHorse.getStabilityModifier();
 
             // Adjust horse movement
             if (Math.random() < (theHorse.getConfidence() * speedModifier)) {
