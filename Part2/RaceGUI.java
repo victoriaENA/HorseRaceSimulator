@@ -1,4 +1,3 @@
-import java.util.concurrent.TimeUnit;
 import java.lang.Math;
 import java.util.List;
 import java.util.ArrayList;
@@ -324,5 +323,12 @@ public class RaceGUI
     public void setTrackCondition(TrackCondition trackCondition) {
         this.trackCondition = trackCondition;
 
+    }
+
+    public HorseGUI getHorseInLane(int laneNumber) {
+        if (laneNumber > 0 && laneNumber <= horses.size()) {
+            return horses.get(laneNumber - 1); // Adjust for zero-based index
+        }
+        return null; // No horse in this lane or invalid lane number
     }
 }

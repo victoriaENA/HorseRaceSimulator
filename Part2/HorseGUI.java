@@ -11,24 +11,27 @@ public class HorseGUI
     private String name;                
     private char symbol;               
     private int distanceTravelled;     
-    private boolean hasFallen = false;
+    private boolean hasFallen;
     private double confidence;         // (between 0 and 1)
-    
+    private HorseBreed breed;           // The breed of the horse (e.g., THOROUGHBRED, ARABIAN)
+    private String coatColor;
+
     //Constructor of class Horse
     /**
      * Constructor for objects of class Horse
      */
-    public HorseGUI(char horseSymbol, String horseName, double horseConfidence)
+    public HorseGUI(String name, HorseBreed breed, String coatColor, char symbol, double confidence)
     {
-        name = horseName;
-        symbol = horseSymbol;
-        confidence = horseConfidence;
+        this.name = name;
+        this.breed = breed;
+        this.coatColor = coatColor;
+        this.symbol = symbol;
+        this.confidence = confidence;
         distanceTravelled = 0; // Ensure horse starts at position 0
         hasFallen = false;     // Horse has not fallen initially
        
     }
-    
-    
+
     //Other methods of class Horse
     
       /**
@@ -71,6 +74,21 @@ public class HorseGUI
         return hasFallen;
     }
 
+    /**
+     * Returns the breed of the horse
+     */
+    public HorseBreed getBreed()
+    {
+        return breed;
+    }
+
+    /**
+     * Returns the coat color of the horse
+     */
+    public String getCoatColor()
+    {
+        return coatColor;
+    }
 
     /**
      * Resets the horse to the start of the race
@@ -115,6 +133,22 @@ public class HorseGUI
     public void setSymbol(char newSymbol)
     {
         symbol = newSymbol;
+    }
+
+    /**
+     * Sets the horse’s breed to the specified value
+     */
+    public void setBreed(HorseBreed newBreed)
+    {
+        breed = newBreed;
+    }
+
+    /**
+     * Sets the horse’s coat color to the specified value
+     */
+    public void setCoatColor(String newColor) {
+        this.coatColor = newColor;
+
     }
 
 }

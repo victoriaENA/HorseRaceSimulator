@@ -1,0 +1,3 @@
+public enum HorseBreed {
+    THOROUGHBRED, ARABIAN, MUSTANG, CLYDESDALE;
+}
