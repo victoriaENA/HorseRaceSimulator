@@ -84,60 +84,46 @@ public class GUI extends JPanel {
         add(winnerLabel, BorderLayout.SOUTH); // Place it at the bottom of the race display
 
         // Event: create track on setTrack
-        setTrackButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showTrack();
-                doneButton.setVisible(true);
-            }
-
+        setTrackButton.addActionListener(e -> {
+            showTrack();
+            doneButton.setVisible(true);
         });
 
-        // Event
-        doneButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                startRaceButton.setVisible(true);
-                customizeButton.setVisible(true);
-                setTrackButton.setVisible(false);
-                laneField.setVisible(false);
-                lengthField.setVisible(false);
-                unitSelector.setVisible(false);
-                doneButton.setVisible(false);
+        // Event: doneButton clicked
+        doneButton.addActionListener(e -> {
+            startRaceButton.setVisible(true);
+            customizeButton.setVisible(true);
+            setTrackButton.setVisible(false);
+            laneField.setVisible(false);
+            lengthField.setVisible(false);
+            unitSelector.setVisible(false);
+            doneButton.setVisible(false);
 
-                // Hide all labels except "Track Condition"
-                for (Component comp : getComponents()) {
-                    if (comp instanceof JPanel) {
-                        for (Component subComp : ((JPanel) comp).getComponents()) {
-                            if (subComp instanceof JLabel) {
-                                JLabel label = (JLabel) subComp;
-                                if (!label.getText().contains("Track Condition")) {
-                                    label.setVisible(false); // Hide labels except "Track Condition"
-                                }
+            // Hide all labels except "Track Condition"
+            for (Component comp : getComponents()) {
+                if (comp instanceof JPanel) {
+                    for (Component subComp : ((JPanel) comp).getComponents()) {
+                        if (subComp instanceof JLabel) {
+                            JLabel label = (JLabel) subComp;
+                            if (!label.getText().contains("Track Condition")) {
+                                label.setVisible(false); // Hide labels except "Track Condition"
                             }
                         }
                     }
                 }
-
             }
-
         });
 
         // Event: startRace on start
-        startRaceButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                startRace();
-                customizeButton.setVisible(false);
-            }
+        startRaceButton.addActionListener(e -> {
+            startRace();
+            customizeButton.setVisible(false);
         });
 
-        customizeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showCustomizationOptions();
-            }
-        });
+        // Event: customizeButton clicked
+        customizeButton.addActionListener(e ->
+                showCustomizationOptions()
+        );
 
 
     }
@@ -222,21 +208,18 @@ public class GUI extends JPanel {
         }
 
         // Timer to animate the race
-        raceTimer = new Timer(500, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!raceEnded) {
-                    race.moveAllHorses();
+        raceTimer = new Timer(500, e -> {
+            if (!raceEnded) {
+                race.moveAllHorses();
 
-                    if (race.isFinished()) {
-                        raceEnded = true;
-                        raceTimer.stop();
-                        displayWinner();
-                        customizeButton.setVisible(true);
-                    }
-
-                    updateTrackDisplayCustom();
+                if (race.isFinished()) {
+                    raceEnded = true;
+                    raceTimer.stop();
+                    displayWinner();
+                    customizeButton.setVisible(true);
                 }
+
+                updateTrackDisplayCustom();
             }
         });
 
@@ -348,12 +331,9 @@ public class GUI extends JPanel {
 
                 HorseGUI currentHorse = horse;
 
-                confirmButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        currentHorse.setBreed((HorseBreed) breedSelector.getSelectedItem());
-                    }
-                });
+                confirmButton.addActionListener(e ->
+                        currentHorse.setBreed((HorseBreed) breedSelector.getSelectedItem())
+                );
 
                 setColorButton.addActionListener(e -> {
                     String selectedColor = (String) colorSelector.getSelectedItem();
