@@ -5,7 +5,7 @@
  * @author (Victoria Notarianni) 
  * @version (24/04/25)
  */
-public class Horse
+public class HorseGUI
 {
     //Fields of class Horse
     private String name;                
@@ -18,7 +18,7 @@ public class Horse
     /**
      * Constructor for objects of class Horse
      */
-    public Horse(char horseSymbol, String horseName, double horseConfidence)
+    public HorseGUI(char horseSymbol, String horseName, double horseConfidence)
     {
         name = horseName;
         symbol = horseSymbol;

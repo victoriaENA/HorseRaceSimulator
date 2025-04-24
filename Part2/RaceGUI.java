@@ -9,10 +9,10 @@ import java.util.ArrayList;
  * @author Victoria Notarianni
  * @version 2.0
  */
-public class Race
+public class RaceGUI
 {
     private int raceLength;
-    private List<Horse> horses; // CHANGE: Use a list instead of fixed lanes
+    private List<HorseGUI> horses; // CHANGE: Use a list instead of fixed lanes
     
    /**
      * Constructor for objects of class Race
@@ -21,7 +21,7 @@ public class Race
      * @param distance the length of the racetrack
      * @param numLanes the number of lanes in the race
      */
-    public Race(int distance, int numLanes) // CHANGE: Added numLanes parameter
+    public RaceGUI(int distance, int numLanes) // CHANGE: Added numLanes parameter
     {
         // initialise instance variables
         raceLength = distance;
@@ -38,7 +38,7 @@ public class Race
      * @param theHorse the horse to be added to the race
      * @param laneNumber the lane that the horse will be added to
      */
-    public void addHorse(Horse theHorse, int laneNumber)
+    public void addHorse(HorseGUI theHorse, int laneNumber)
     {
         if (laneNumber > 0 && laneNumber <= horses.size()) // CHANGE: Validate lane number
         {
@@ -61,7 +61,7 @@ public class Race
     {
         boolean finished = false;
 
-        for (Horse horse : horses) {
+        for (HorseGUI horse : horses) {
             if (horse != null) {
                 horse.goBackToStart();
             }
@@ -72,15 +72,15 @@ public class Race
         while (!finished)
         {
             //Move horse
-            for (Horse horse : horses) {
+            for (HorseGUI horse : horses) {
                 if (horse != null) {
                     moveHorse(horse);
                 }
             }
 
             // Check if any horse won by crossing the finish line
-            Horse winner = null;
-            for (Horse horse : horses) {
+            HorseGUI winner = null;
+            for (HorseGUI horse : horses) {
                 if (horse != null && raceWonBy(horse)) {
                     winner = horse;
                     break;
@@ -95,7 +95,7 @@ public class Race
                 activeCount = 0;
                 
                 // Count horses that haven't fallen
-                for (Horse horse : horses) {
+                for (HorseGUI horse : horses) {
                     if (horse != null && !horse.hasFallen()) {
                         activeCount++;
                     }
@@ -129,7 +129,7 @@ public class Race
             System.out.println("\nAll horses have fallen! No winner!");
         }
         else{
-            for (Horse horse : horses) {
+            for (HorseGUI horse : horses) {
                 if (horse != null && raceWonBy(horse)) {
                     System.out.println("And the winner is... " + horse.getName());
                     return;
@@ -145,7 +145,7 @@ public class Race
      * 
      * @param theHorse the horse to be moved
      */
-    private void moveHorse(Horse theHorse)
+    private void moveHorse(HorseGUI theHorse)
     {
         //if the horse has fallen it cannot move, 
         //so only run if it has not fallen
@@ -169,7 +169,7 @@ public class Race
     }
 
     // Adjust horse confidence while ensuring it stays between 0 and 1
-    private void adjustConfidence(Horse horse, double adjustment) {
+    private void adjustConfidence(HorseGUI horse, double adjustment) {
         double newConfidence = Math.max(0.1, Math.min(0.9, horse.getConfidence() + adjustment));
         newConfidence =   Math.round(newConfidence * 10.0) / 10.0;
         horse.setConfidence(newConfidence);
@@ -181,7 +181,7 @@ public class Race
      * @param theHorse The horse we are testing
      * @return true if the horse has won, false otherwise.
      */
-    private boolean raceWonBy(Horse theHorse)
+    private boolean raceWonBy(HorseGUI theHorse)
     {
         return theHorse.getDistanceTravelled() >= raceLength; // CHANGE: Allow distance to exceed race length
     }
@@ -196,7 +196,7 @@ public class Race
         multiplePrint('=',raceLength+3); //top edge of track
         System.out.println();
         
-        for (Horse horse : horses) { // CHANGE: Loop through list instead of fixed lanes
+        for (HorseGUI horse : horses) { // CHANGE: Loop through list instead of fixed lanes
             if (horse != null) {
                 printLane(horse);
             } else {
@@ -218,7 +218,7 @@ public class Race
      * check for null lane is already done in the printRace method and since it is 
      * ONLY being called there, not necessary here/ seemed redundant
      */
-    private void printLane(Horse theHorse)
+    private void printLane(HorseGUI theHorse)
     {
         //calculate how many spaces are needed before
         //and after the horse
