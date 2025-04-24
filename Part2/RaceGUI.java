@@ -12,7 +12,9 @@ import java.util.ArrayList;
 public class RaceGUI
 {
     private int raceLength;
-    private List<HorseGUI> horses; // CHANGE: Use a list instead of fixed lanes
+    private List<HorseGUI> horses;
+    private String unit; // Unit for race length scaling
+    private TrackCondition trackCondition;// CHANGE: Use a list instead of fixed lanes
     
    /**
      * Constructor for objects of class Race
@@ -21,14 +23,35 @@ public class RaceGUI
      * @param distance the length of the racetrack
      * @param numLanes the number of lanes in the race
      */
-    public RaceGUI(int distance, int numLanes) // CHANGE: Added numLanes parameter
+   public RaceGUI(int distance, int numLanes, String unit, TrackCondition trackCondition) // CHANGE: Added numLanes parameter
     {
-        // initialise instance variables
-        raceLength = distance;
+        this.unit = unit;
+        this.raceLength = scaleLengthByUnit(distance, unit);
+        this.trackCondition = trackCondition;
         horses = new ArrayList<>(numLanes); // CHANGE: Initialize list dynamically
+
         // Fill the list with null to represent empty lanes
         for (int i = 0; i < numLanes; i++) {
             horses.add(null);
+        }
+    }
+
+    /**
+     * Scales the race length based on the chosen unit
+     *
+     * @param baseLength the original race length
+     * @param unit the selected unit of measurement
+     * @return the scaled race length
+     */
+    private int scaleLengthByUnit(int baseLength, String unit) {
+        switch (unit.toLowerCase()) {
+            case "yards":
+                return (int) Math.round(baseLength * 0.8); // Adjusting for yards
+            case "centimeters":
+                return (int) Math.round(baseLength * 0.6); // Adjusting for centimeters
+            case "meters":
+            default:
+                return baseLength; // Default is meters (unchanged)
         }
     }
     
@@ -120,59 +143,86 @@ public class RaceGUI
         printWinner(activeCount);
     } */
 
-    /***
-     * Print race results after completion -- CHANGE
-     */
-    private void printWinner(int activeCount)
-    {
-        if (activeCount == 0) {
-            System.out.println("\nAll horses have fallen! No winner!");
+    public void adjustConfidenceForTrack(HorseGUI horse) {
+        double confidenceAdjustment = 0.0;
+
+        switch (trackCondition) {
+            case MUDDY:
+                confidenceAdjustment = -0.1; // Slight nerves in mud
+                break;
+            case ICY:
+                confidenceAdjustment = -0.2; // Very nervous on ice
+                break;
+            case DRY:
+                confidenceAdjustment = 0.1; // Boost from good conditions
+                break;
         }
-        else{
-            for (HorseGUI horse : horses) {
-                if (horse != null && raceWonBy(horse)) {
-                    System.out.println("And the winner is... " + horse.getName());
-                    return;
-                }
+
+        adjustConfidence(horse, confidenceAdjustment);
+    }
+
+
+    public void moveAllHorses() {
+        for (HorseGUI horse : horses) {
+            if (horse != null) {
+                moveHorse(horse);  // Calls the private method internally
             }
         }
     }
-    
+
     /**
-     * Randomly make a horse move forward or fall depending
-     * on its confidence rating
-     * A fallen horse cannot move
-     * 
+     * Modifies horse movement based on track conditions and confidence
+     *
      * @param theHorse the horse to be moved
      */
-    private void moveHorse(HorseGUI theHorse)
-    {
-        //if the horse has fallen it cannot move, 
-        //so only run if it has not fallen
-        if  (!theHorse.hasFallen())
-        {
-            //the probability that the horse will move forward depends on the confidence;
-            if (Math.random() < theHorse.getConfidence())
-            {
-               theHorse.moveForward();
+    private void moveHorse(HorseGUI theHorse) {
+        if (!theHorse.hasFallen()) {
+            double speedModifier = 1.0;
+            double fallRiskModifier = 1.0;
+
+            // 🔹 Adjust values based on track conditions
+            switch (trackCondition) {
+                case MUDDY:
+                    speedModifier = 0.7;  // Slower speed
+                    fallRiskModifier = 1.2; // Slightly higher fall chance
+                    break;
+                case ICY:
+                    speedModifier = 0.9;  // Almost normal speed
+                    fallRiskModifier = 1.5; // Higher fall risk
+                    break;
+                case DRY:
+                    speedModifier = 1.2;  // Faster movement
+                    fallRiskModifier = 0.8; // Reduced fall risk
+                    break;
             }
-            
-            //the probability that the horse will fall is very small (max is 0.1)
-            //but will also will depends exponentially on confidence 
-            //so if you double the confidence, the probability that it will fall is *2
-            if (Math.random() < (0.1*theHorse.getConfidence()*theHorse.getConfidence()))
-            {
+
+            // Adjust horse movement
+            if (Math.random() < (theHorse.getConfidence() * speedModifier)) {
+                theHorse.moveForward();
+            }
+
+            // Adjust fall chance
+            if (Math.random() < (0.1 * theHorse.getConfidence() * theHorse.getConfidence() * fallRiskModifier)) {
                 theHorse.fall();
-                adjustConfidence(theHorse, -0.1); //confidence decreases when fall
+                adjustConfidence(theHorse, -0.1);
             }
         }
     }
 
     // Adjust horse confidence while ensuring it stays between 0 and 1
-    private void adjustConfidence(HorseGUI horse, double adjustment) {
+    public void adjustConfidence(HorseGUI horse, double adjustment) {
         double newConfidence = Math.max(0.1, Math.min(0.9, horse.getConfidence() + adjustment));
-        newConfidence =   Math.round(newConfidence * 10.0) / 10.0;
+        newConfidence =   Math.round(newConfidence * 100.0) / 100.0;
         horse.setConfidence(newConfidence);
+    }
+
+    public HorseGUI getWinner() {
+        for (HorseGUI horse : horses) {
+            if (horse != null && raceWonBy(horse)) {
+                return horse;  // Returns the winning horse
+            }
+        }
+        return null;  // No winner yet
     }
         
     /**
@@ -230,6 +280,24 @@ public class RaceGUI
         return trackDisplay;
     }
 
+    public boolean isFinished() {
+        boolean anyHorseFinished = false;
+        boolean allHorsesFallen = true;
+
+        for (HorseGUI horse : horses) {
+            if (horse != null) {
+                if (horse.getDistanceTravelled() >= raceLength) {
+                    anyHorseFinished = true;
+                }
+                if (!horse.hasFallen()) {
+                    allHorsesFallen = false;
+                }
+            }
+        }
+
+        return anyHorseFinished || allHorsesFallen;
+    }
+
     /**
      * Generates a repeated string of a given character
      *
@@ -243,5 +311,18 @@ public class RaceGUI
             result.append(aChar);
         }
         return result.toString();
+    }
+
+    public List<HorseGUI> getHorses() {
+        if (horses == null) {
+            horses = new ArrayList<>(); // Ensure an empty list is returned instead of null
+        }
+        return horses;
+    }
+
+    // Setter method for track condition
+    public void setTrackCondition(TrackCondition trackCondition) {
+        this.trackCondition = trackCondition;
+
     }
 }
