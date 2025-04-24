@@ -310,44 +310,52 @@ public class GUI extends JPanel {
     private void showCustomizationOptions() {
         customizationPanel.removeAll();  // Clear previous options
 
+        // Array of available symbols (chess pieces and others)
+        Character[] symbols = {
+                '♞', // Black knight
+                '♚', // Black king
+                '♛', // Black queen
+                '★', // Star
+                '⚡', // Lightning
+        };
+
         for (HorseGUI horse : race.getHorses()) {
             if (horse != null) {
                 JPanel horsePanel = new JPanel(new FlowLayout());
 
                 JLabel horseLabel = new JLabel("Customize " + horse.getName() + ": ");
+
+                //Breed
                 JComboBox<HorseBreed> breedSelector = new JComboBox<>(HorseBreed.values());
                 breedSelector.setSelectedItem(horse.getBreed());
 
-                // Symbol Color Selector
+                // Color Selector
                 JComboBox<String> colorSelector = new JComboBox<>(new String[]{"Black", "White", "Brown", "Grey"});
                 colorSelector.setSelectedItem(horse.getCoatColor());  // Set the current coat color
 
-                JTextField symbolInput = new JTextField(1); // Single character input field
-                symbolInput.setText(String.valueOf(horse.getSymbol())); // Set current symbol
+                //Symbol
+                JComboBox<Character> symbolSelector = new JComboBox<>(symbols);
+                symbolSelector.setSelectedItem(horse.getSymbol());
 
                 JButton confirmButton = new JButton("Set Breed");
                 JButton setColorButton = new JButton("Set Color");
                 JButton setSymbolButton = new JButton("Set Symbol");
 
-                HorseGUI currentHorse = horse;
 
                 confirmButton.addActionListener(e ->
-                        currentHorse.setBreed((HorseBreed) breedSelector.getSelectedItem())
+                        horse.setBreed((HorseBreed) breedSelector.getSelectedItem())
                 );
 
                 setColorButton.addActionListener(e -> {
                     String selectedColor = (String) colorSelector.getSelectedItem();
-                    currentHorse.setCoatColor(selectedColor);
+                    horse.setCoatColor(selectedColor);
                     updateTrackDisplayCustom(); // Refresh to show new color
 
                 });
 
                 setSymbolButton.addActionListener(e -> {
-                    String input = symbolInput.getText();
-                    if (!input.isEmpty()) {
-                        horse.setSymbol(input.charAt(0)); // Set the new symbol
-                        updateTrackDisplayCustom(); // Refresh the track display
-                    }
+                    horse.setSymbol((Character) symbolSelector.getSelectedItem());
+                    updateTrackDisplayCustom();
                 });
 
                 horsePanel.add(horseLabel);
@@ -355,7 +363,7 @@ public class GUI extends JPanel {
                 horsePanel.add(confirmButton);
                 horsePanel.add(colorSelector);
                 horsePanel.add(setColorButton);
-                horsePanel.add(symbolInput);
+                horsePanel.add(symbolSelector);
                 horsePanel.add(setSymbolButton);
                 customizationPanel.add(horsePanel);
             }
@@ -363,7 +371,6 @@ public class GUI extends JPanel {
 
         // Toggle visibility on click
         customizationPanel.setVisible(!customizationPanel.isVisible());
-
         customizationPanel.revalidate();
         customizationPanel.repaint();
     }
