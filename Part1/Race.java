@@ -19,7 +19,7 @@ public class Race
      * Constructor for objects of class Race
      * Initially there are no horses in the lanes
      *
-     * @param distance the length of the racetrack (in metres/yards...)
+     * @param distance the length of the racetrack
      * @param numLanes the number of lanes in the race
      */
     public Race(int distance, int numLanes) // CHANGE: Added numLanes parameter
@@ -41,22 +41,15 @@ public class Race
      */
     public void addHorse(Horse theHorse, int laneNumber)
     {
-        if (laneNumber == 1)
+        if (laneNumber > 0 && laneNumber <= horses.size()) // CHANGE: Validate lane number
         {
-            lane1Horse = theHorse;
-        }
-        else if (laneNumber == 2)
-        {
-            lane2Horse = theHorse;
-        }
-        else if (laneNumber == 3)
-        {
-            lane3Horse = theHorse;
+            horses.set(laneNumber - 1, theHorse); // CHANGE: Adjust index for zero-based list
         }
         else
         {
             System.out.println("Cannot add horse to lane " + laneNumber + " because there is no such lane");
         }
+
     }
     
     /**
@@ -71,25 +64,38 @@ public class Race
         boolean finished = false;
         
         //reset all the lanes (all horses not fallen and back to 0). 
-        lane1Horse.goBackToStart();
-        lane2Horse.goBackToStart();
-        lane3Horse.goBackToStart();
+        for (Horse horse : horses) {
+            if (horse != null) {
+                horse.goBackToStart();
+            }
+        }
+        printRace(); // Show horses at position 0 before any movement
                       
         while (!finished)
         {
-            //move each horse
-            moveHorse(lane1Horse);
-            moveHorse(lane2Horse);
-            moveHorse(lane3Horse);
+            //Move horse
+            for (Horse horse : horses) {
+                if (horse != null) {
+                    moveHorse(horse);
+                }
+            }
+
+            // Check if any horse won by crossing the finish line
+            Horse winner = null;
+            for (Horse horse : horses) {
+                if (horse != null && raceWonBy(horse)) {
+                    winner = horse;
+                    break;
+                }
+            }
+
+            if (winner != null) {
+                adjustConfidence(winner, 0.1); //  Increase confidence for winner
+                finished = true; //Race ends & loop ends
+            } 
                         
             //print the race positions
             printRace();
-            
-            //if any of the three horses has won the race is finished
-            if ( raceWonBy(lane1Horse) || raceWonBy(lane2Horse) || raceWonBy(lane3Horse) )
-            {
-                finished = true;
-            }
            
             //wait for 100 milliseconds
             try{ 
@@ -155,14 +161,15 @@ public class Race
         multiplePrint('=',raceLength+3); //top edge of track
         System.out.println();
         
-        printLane(lane1Horse);
-        System.out.println();
-        
-        printLane(lane2Horse);
-        System.out.println();
-        
-        printLane(lane3Horse);
-        System.out.println();
+        for (Horse horse : horses) { // CHANGE: Loop through list instead of fixed lanes
+            if (horse != null) {
+                printLane(horse);
+            } else {
+                System.out.print("|");
+                multiplePrint(' ', raceLength);  // Printing the empty lane
+                System.out.println(" |");
+            }
+        }
         
         multiplePrint('=',raceLength+3); //bottom edge of track
         System.out.println();    
@@ -178,8 +185,8 @@ public class Race
     {
         //calculate how many spaces are needed before
         //and after the horse
-        int spacesBefore = theHorse.getDistanceTravelled();
-        int spacesAfter = raceLength - theHorse.getDistanceTravelled();
+        int spacesBefore = (theHorse != null) ? theHorse.getDistanceTravelled() : 0;
+        int spacesAfter = raceLength - spacesBefore ;
         
         //print a | for the beginning of the lane
         System.out.print('|');
@@ -191,7 +198,7 @@ public class Race
         //else print the horse's symbol
         if(theHorse.hasFallen())
         {
-            System.out.print('\u2322');
+            System.out.print("X");
         }
         else
         {
@@ -199,7 +206,7 @@ public class Race
         }
         
         //print the spaces after the horse
-        multiplePrint(' ',spacesAfter);
+        multiplePrint(' ',spacesAfter > 0 ? spacesAfter : 0);
         
         //print the | for the end of the track
         System.out.print('|');
@@ -214,11 +221,8 @@ public class Race
      */
     private void multiplePrint(char aChar, int times)
     {
-        int i = 0;
-        while (i < times)
-        {
+         for (int i = 0; i < times; i++) {
             System.out.print(aChar);
-            i = i + 1;
         }
     }
 }

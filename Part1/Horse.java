@@ -2,7 +2,7 @@
 /**
  * Creates horse objects
  * 
- * @author (yVictoria Notarianni) 
+ * @author (Victoria Notarianni) 
  * @version (24/04/25)
  */
 public class Horse
