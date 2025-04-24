@@ -60,17 +60,16 @@ public class Race
      */
     public void startRace()
     {
-        //declare a local variable to tell us when the race is finished
         boolean finished = false;
-        
-        //reset all the lanes (all horses not fallen and back to 0). 
+
         for (Horse horse : horses) {
             if (horse != null) {
                 horse.goBackToStart();
             }
         }
         printRace(); // Show horses at position 0 before any movement
-                      
+        int activeCount = 0; //no of horses not fallen
+
         while (!finished)
         {
             //Move horse
@@ -90,17 +89,52 @@ public class Race
             }
 
             if (winner != null) {
-                adjustConfidence(winner, 0.1); //  Increase confidence for winner
+                
                 finished = true; //Race ends & loop ends
-            } 
-                        
-            //print the race positions
-            printRace();
-           
+            } else {
+                // Reset active count for the current loop
+                activeCount = 0;
+
+                // Count horses that haven't fallen
+                for (Horse horse : horses) {
+                    if (horse != null && !horse.hasFallen()) {
+                        activeCount++;
+                    }
+                }
+                // If all horses have fallen
+                if (activeCount == 0) {
+                    finished = true;
+                }
+            }
+
             //wait for 100 milliseconds
-            try{ 
-                TimeUnit.MILLISECONDS.sleep(100);
-            }catch(Exception e){}
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            printRace();
+
+        }
+        printWinner(activeCount);
+    }
+
+    /***
+     * Print race results after completion -- CHANGE
+     */
+    private void printWinner(int activeCount)
+    {
+        if (activeCount == 0) {
+            System.out.println("\nAll horses have fallen! No winner!");
+        }
+        else{
+            for (Horse horse : horses) {
+                if (horse != null && raceWonBy(horse)) {
+                    System.out.println("And the winner is... " + horse.getName());
+                    return;
+                }
+            }
         }
     }
     
