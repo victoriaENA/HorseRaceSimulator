@@ -1,33 +1,36 @@
 import java.util.concurrent.TimeUnit;
 import java.lang.Math;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
- * A three-horse race, each horse running in its own lane
- * for a given distance
+ *A horse race with a configurable number of lanes for given distance
  * 
- * @author McRaceface
- * @version 1.0
+ * @author Victoria Notarianni
+ * @version 2.0
  */
 public class Race
 {
     private int raceLength;
-    private Horse lane1Horse;
-    private Horse lane2Horse;
-    private Horse lane3Horse;
+    private List<Horse> horses; // CHANGE: Use a list instead of fixed lanes
+    
 
-    /**
+   /**
      * Constructor for objects of class Race
      * Initially there are no horses in the lanes
-     * 
+     *
      * @param distance the length of the racetrack (in metres/yards...)
+     * @param numLanes the number of lanes in the race
      */
-    public Race(int distance)
+    public Race(int distance, int numLanes) // CHANGE: Added numLanes parameter
     {
         // initialise instance variables
         raceLength = distance;
-        lane1Horse = null;
-        lane2Horse = null;
-        lane3Horse = null;
+        horses = new ArrayList<>(numLanes); // CHANGE: Initialize list dynamically
+        // Fill the list with null to represent empty lanes
+        for (int i = 0; i < numLanes; i++) {
+            horses.add(null);
+        }
     }
     
     /**
