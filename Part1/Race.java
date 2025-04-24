@@ -163,7 +163,7 @@ public class Race
             if (Math.random() < (0.1*theHorse.getConfidence()*theHorse.getConfidence()))
             {
                 theHorse.fall();
-                adjustConfidence(theHorse, -0.1);
+                adjustConfidence(theHorse, -0.1); //confidence decreases when fall
             }
         }
     }
@@ -175,7 +175,7 @@ public class Race
         horse.setConfidence(newConfidence);
     }
         
-    /** 
+    /**
      * Determines if a horse has won the race
      *
      * @param theHorse The horse we are testing
@@ -183,14 +183,7 @@ public class Race
      */
     private boolean raceWonBy(Horse theHorse)
     {
-        if (theHorse.getDistanceTravelled() == raceLength)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return theHorse.getDistanceTravelled() >= raceLength; // CHANGE: Allow distance to exceed race length
     }
     
     /***
@@ -198,7 +191,7 @@ public class Race
      */
     private void printRace()
     {
-        System.out.print('\u000C');  //clear the terminal window
+        System.out.print("\033\143");  //clear the terminal window
         
         multiplePrint('=',raceLength+3); //top edge of track
         System.out.println();
@@ -222,12 +215,14 @@ public class Race
      * for example
      * |           X                      |
      * to show how far the horse has run
+     * check for null lane is already done in the printRace method and since it is 
+     * ONLY being called there, not necessary here/ seemed redundant
      */
     private void printLane(Horse theHorse)
     {
         //calculate how many spaces are needed before
         //and after the horse
-        int spacesBefore = (theHorse != null) ? theHorse.getDistanceTravelled() : 0;
+        int spacesBefore = theHorse.getDistanceTravelled();
         int spacesAfter = raceLength - spacesBefore ;
         
         //print a | for the beginning of the lane
