@@ -30,37 +30,54 @@ public class Horse
     
     
     //Other methods of class Horse
+    
+      /**
+     * Returns the horse’s confidence rating
+     */
+    public double getConfidence()
+    {
+        return confidence;
+    }
+
+    /**
+     * Returns the distance travelled by the horse
+     */
+    public int getDistanceTravelled()
+    {
+        return distanceTravelled;
+    }
+
+    /**
+     * Returns the name of the horse
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * Returns the character used to represent the horse
+     */
+    public char getSymbol()
+    {
+        return symbol;
+    }
+
+    /**
+     * Returns true if the horse has fallen, false otherwise
+     */
+    public boolean hasFallen()
+    {
+        return hasFallen;
+    }
+
+
     public void fall()
     {
         
     }
     
-    public double getConfidence()
-    {
-        
-    }
-    
-    public int getDistanceTravelled()
-    {
-        
-    }
-    
-    public String getName()
-    {
-        
-    }
-    
-    public char getSymbol()
-    {
-        
-    }
-    
     public void goBackToStart()
-    {
-        
-    }
-    
-    public boolean hasFallen()
     {
         
     }
