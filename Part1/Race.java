@@ -14,7 +14,6 @@ public class Race
     private int raceLength;
     private List<Horse> horses; // CHANGE: Use a list instead of fixed lanes
     
-
    /**
      * Constructor for objects of class Race
      * Initially there are no horses in the lanes
@@ -89,12 +88,12 @@ public class Race
             }
 
             if (winner != null) {
-                
+                adjustConfidence(winner, 0.1); //  Increase confidence for winner
                 finished = true; //Race ends & loop ends
             } else {
                 // Reset active count for the current loop
                 activeCount = 0;
-
+                
                 // Count horses that haven't fallen
                 for (Horse horse : horses) {
                     if (horse != null && !horse.hasFallen()) {
@@ -107,7 +106,7 @@ public class Race
                 }
             }
 
-            //wait for 100 milliseconds
+            //wait for 500 milliseconds
             try {
                 TimeUnit.MILLISECONDS.sleep(500);
             } catch (InterruptedException e) {
@@ -117,6 +116,7 @@ public class Race
             printRace();
 
         }
+
         printWinner(activeCount);
     }
 
@@ -163,8 +163,16 @@ public class Race
             if (Math.random() < (0.1*theHorse.getConfidence()*theHorse.getConfidence()))
             {
                 theHorse.fall();
+                adjustConfidence(theHorse, -0.1);
             }
         }
+    }
+
+    // Adjust horse confidence while ensuring it stays between 0 and 1
+    private void adjustConfidence(Horse horse, double adjustment) {
+        double newConfidence = Math.max(0.1, Math.min(0.9, horse.getConfidence() + adjustment));
+        newConfidence =   Math.round(newConfidence * 10.0) / 10.0;
+        horse.setConfidence(newConfidence);
     }
         
     /** 
@@ -244,6 +252,8 @@ public class Race
         
         //print the | for the end of the track
         System.out.print('|');
+        System.out.printf(theHorse.getName() + " (Current confidence " + theHorse.getConfidence() + ")");
+        System.out.println();  // ensure new line formatting is correct
     }
         
     
