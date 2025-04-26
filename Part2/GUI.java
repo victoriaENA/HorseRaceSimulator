@@ -412,7 +412,7 @@ public class GUI extends JPanel {
         // Wrap the entire customization panel in a scrollable view
         customizationPanel.setLayout(new BorderLayout());
         customizationPanel.add(scrollPane, BorderLayout.CENTER);
-        customizationPanel.setVisible(true);
+        customizationPanel.setVisible(!customizationPanel.isVisible());
         customizationPanel.revalidate();
         customizationPanel.repaint();
     }

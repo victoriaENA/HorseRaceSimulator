@@ -271,7 +271,20 @@ public class RaceGUI
 
             // Include horse details if present
             if (horse != null) {
-                lane.append(" " + horse.getName() + " (" + horse.getConfidence() + ")");
+                lane.append(" " + horse.getName() + " (\uD83C\uDF1F " + horse.getConfidence() + ")");
+                // Add equipment symbols next to horse name
+                lane.append(" [");
+
+                // Saddle symbol
+                lane.append(getEquipmentSymbol(horse.getSaddle()));
+
+                // Shoes symbol
+                lane.append(getEquipmentSymbol(horse.getHorseshoes()));
+
+                // Accessory symbol
+                lane.append(getEquipmentSymbol(horse.getAccessory()));
+
+                lane.append("]");
             }
 
             trackDisplay.add(lane.toString());
@@ -281,6 +294,20 @@ public class RaceGUI
         trackDisplay.add(multiplePrint('=', trackWidth));
 
         return trackDisplay;
+    }
+
+    private String getEquipmentSymbol(HorseEquipment equipment) {
+        if (equipment == null) return " ";
+
+        switch (equipment) {
+            case LIGHT_SADDLE: return "L\uD83C\uDFA0 ";
+            case HEAVY_SADDLE: return "H\uD83C\uDFA0 ";
+            case STEEL_SHOES: return "S\uD83D\uDC5F ";
+            case ALUMINUM_SHOES: return "A\uD83D\uDC5F ";
+            case RACING_BLANKET: return "🎽";
+            case LUCKY_HAT: return "🎩";
+            default: return "";
+        }
     }
 
     public boolean isFinished() {
