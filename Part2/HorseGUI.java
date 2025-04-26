@@ -33,7 +33,7 @@ public class HorseGUI
         distanceTravelled = 0; // Ensure horse starts at position 0
         hasFallen = false;     // Horse has not fallen initially
         this.saddle = HorseEquipment.STANDARD_SADDLE;
-        this.horseshoes = HorseEquipment.RUBBER_SHOES;
+        this.horseshoes = HorseEquipment.STANDARD_SHOES;
         this.accessory = HorseEquipment.NONE;
     }
 
@@ -188,6 +188,11 @@ public class HorseGUI
     public HorseEquipment getAccessory() {
         return accessory;
     }
+
+    public double getBaseEndurance() {
+        return this.getBreed().getEndurance();
+    }
+
 
 
 }

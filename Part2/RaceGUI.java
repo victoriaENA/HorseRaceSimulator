@@ -179,7 +179,7 @@ public class RaceGUI
             double speedModifier = 1.0;
             double fallRiskModifier = 1.0;
 
-            // Adjust values based on track conditions
+            //  Adjust values based on track conditions
             switch (trackCondition) {
                 case MUDDY:
                     speedModifier = 0.7;  // Slower speed
@@ -199,8 +199,13 @@ public class RaceGUI
             speedModifier *= theHorse.getSpeedModifier();
             fallRiskModifier *= theHorse.getStabilityModifier();
 
+            // endurance impact
+            double endurance = theHorse.getBaseEndurance();
+            double enduranceModifier = 0.8 + (endurance / 10.0);
+            // Endurance 5 ➔ +0.8+0.5 = 1.3    (ok)
+
             // Adjust horse movement
-            if (Math.random() < (theHorse.getConfidence() * speedModifier)) {
+            if (Math.random() < (theHorse.getConfidence() * speedModifier * enduranceModifier)) {
                 theHorse.moveForward();
             }
 
@@ -318,8 +323,8 @@ public class RaceGUI
     private String getBreedSymbol(HorseBreed breed) {
 
         switch (breed) {
-            case ARABIAN: return "Arabian";
-            case MUSTANG: return "Mustang";// or something else
+            case ARABIAN: return "⚜\uFE0F";
+            case MUSTANG: return "\uD83C\uDF35";
             default: return "";
         }
     }

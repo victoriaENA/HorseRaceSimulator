@@ -7,7 +7,7 @@ public enum HorseEquipment {
     // Horseshoes
     STEEL_SHOES( 1.05, 0.95),
     ALUMINUM_SHOES( 0.9, 1.1),
-    RUBBER_SHOES(1.0, 1.0),
+    STANDARD_SHOES(1.0, 1.0),
 
     // Accessories
     RACING_BLANKET( 1.0, 1.0),
