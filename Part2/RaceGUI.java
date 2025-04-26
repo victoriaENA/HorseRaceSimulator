@@ -271,7 +271,12 @@ public class RaceGUI
 
             // Include horse details if present
             if (horse != null) {
-                lane.append(" " + horse.getName() + " (\uD83C\uDF1F " + horse.getConfidence() + ")");
+
+                lane.append(" " + horse.getName() + " (\uD83C\uDF1F " + horse.getConfidence() + ") ");
+                // Add equipment symbols next to horse name
+
+                lane.append(getBreedSymbol(horse.getBreed()));
+
                 // Add equipment symbols next to horse name
                 lane.append(" [");
 
@@ -306,6 +311,15 @@ public class RaceGUI
             case ALUMINUM_SHOES: return "A\uD83D\uDC5F ";
             case RACING_BLANKET: return "🎽";
             case LUCKY_HAT: return "🎩";
+            default: return "";
+        }
+    }
+
+    private String getBreedSymbol(HorseBreed breed) {
+
+        switch (breed) {
+            case ARABIAN: return "Arabian";
+            case MUSTANG: return "Mustang";// or something else
             default: return "";
         }
     }

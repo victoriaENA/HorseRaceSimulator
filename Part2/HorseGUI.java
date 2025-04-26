@@ -13,7 +13,7 @@ public class HorseGUI
     private int distanceTravelled;     
     private boolean hasFallen;
     private double confidence;         // (between 0 and 1)
-    private HorseBreed breed;           // The breed of the horse (e.g., THOROUGHBRED, ARABIAN)
+    private HorseBreed breed;           // The breed of the horse (e.g., STANDARDBRED, ARABIAN)
     private String coatColor;
     private HorseEquipment saddle;
     private HorseEquipment horseshoes;

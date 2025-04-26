@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.List;
 
@@ -168,7 +166,7 @@ public class GUI extends JPanel {
 
             HorseGUI horse = new HorseGUI(
                     "Horse " + (lane),
-                    HorseBreed.THOROUGHBRED,
+                    HorseBreed.STANDARDBRED,
                     "Black",
                     '♞',
                     Math.round((0.2 + (Math.random() * 0.6)) * 10) / 10.0
@@ -369,7 +367,11 @@ public class GUI extends JPanel {
                 JButton setSymbolButton = new JButton("Set Symbol");
                 JButton setEquipmentButton = new JButton("Set Equipment");
 
-                confirmButton.addActionListener(e -> horse.setBreed((HorseBreed) breedSelector.getSelectedItem()));
+                confirmButton.addActionListener(e -> {
+                    horse.setBreed((HorseBreed) breedSelector.getSelectedItem());
+                    updateTrackDisplayCustom();
+                });
+
                 setColorButton.addActionListener(e -> {
                     horse.setCoatColor((String) colorSelector.getSelectedItem());
                     updateTrackDisplayCustom();
