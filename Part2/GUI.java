@@ -180,7 +180,7 @@ public class GUI extends JPanel {
 
         // Enforce minimum and maximum values
         lanes = Math.max(2, Math.min(40, lanes));  // Between 2 and 40
-        length = Math.min(60, length);
+        length = Math.max(20, Math.min(60, length)); //Between 20 and 60
         laneField.setText(String.valueOf(lanes));
         lengthField.setText(String.valueOf(length));
 
