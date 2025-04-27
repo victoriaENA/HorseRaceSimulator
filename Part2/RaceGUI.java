@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * A horse race with a configurable number of lanes
  *
- * @author McRaceface
+ * @author Victoria Notarianni
  * @version 1.1
  */
 public class RaceGUI {
