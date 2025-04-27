@@ -19,6 +19,8 @@ public class GUI extends JPanel {
     private boolean raceEnded = false;
     private JButton customizeButton;
     private JPanel customizationPanel;
+    private JButton statsButton;
+    private JPanel statsPanel;
 
 
     public GUI() {
@@ -58,6 +60,10 @@ public class GUI extends JPanel {
         customizeButton.setVisible(false);  // Initially hidden
         inputPanel.add(customizeButton);
 
+        statsButton = new JButton("Statistics");
+        statsButton.setVisible(false); // Initially hidden
+        inputPanel.add(statsButton);
+
         // Track display panel
         trackDisplay = new JPanel();
         trackDisplay.setLayout(new BoxLayout(trackDisplay, BoxLayout.Y_AXIS));
@@ -68,12 +74,22 @@ public class GUI extends JPanel {
         customizationPanel.setBorder(BorderFactory.createTitledBorder("Horse Customization"));
         customizationPanel.setVisible(false); // initially hidden
 
+        // Create stats panel
+        statsPanel = new JPanel();
+        statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
+        statsPanel.setBorder(BorderFactory.createTitledBorder("Race Statistics"));
+        statsPanel.setVisible(false);
+
         // Center area with BorderLayout for toggleable panel
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.add(new JScrollPane(trackDisplay), BorderLayout.CENTER);
-        centerPanel.add(customizationPanel, BorderLayout.EAST); // Add customization panel to the right
 
-        // Add to main layout
+        // Create a wrapper panel to swap between customization and stats
+        JPanel sidePanel = new JPanel(new CardLayout());
+        sidePanel.add(customizationPanel, "Customization");
+        sidePanel.add(statsPanel, "Statistics");
+
+        centerPanel.add(sidePanel, BorderLayout.EAST);
         add(centerPanel, BorderLayout.CENTER);
 
         //Winner message
@@ -117,6 +133,9 @@ public class GUI extends JPanel {
         startRaceButton.addActionListener(e -> {
             startRace();
             customizeButton.setVisible(false);
+            statsPanel.setVisible(false);
+            statsButton.setVisible(false);
+            customizationPanel.setVisible(false);
         });
 
         // Event: customizeButton clicked
@@ -124,8 +143,9 @@ public class GUI extends JPanel {
                 showCustomizationOptions()
         );
 
-
+        statsButton.addActionListener(e -> showStatistics());
     }
+
 
     // Main method to run the GUI
     public static void main(String[] args) {
@@ -150,6 +170,8 @@ public class GUI extends JPanel {
 
         trackDisplay.removeAll();
         winnerLabel.setText(" ");
+        statsPanel.setVisible(false);
+        statsButton.setVisible(false);
 
         int lanes = Integer.parseInt(laneField.getText());
         int length = Integer.parseInt(lengthField.getText());
@@ -187,6 +209,9 @@ public class GUI extends JPanel {
         raceEnded = false;
         winnerLabel.setText(" ");
 
+        // Start the race timer in RaceGUI
+        race.startRaceTimer();
+
         String selectedCondition = ((String) trackSelector.getSelectedItem()).toUpperCase();
         TrackCondition trackCondition = TrackCondition.valueOf(selectedCondition);
 
@@ -195,7 +220,9 @@ public class GUI extends JPanel {
         // Reset each horse to the starting position
         for (HorseGUI horse : race.getHorses()) {
             if (horse != null) {
+                horse.resetRaceTracking();
                 horse.goBackToStart();
+                horse.prepareForNewRace();
             }
         }
 
@@ -225,15 +252,18 @@ public class GUI extends JPanel {
         raceTimer.start();
     }
 
+
     private void displayWinner() {
-        HorseGUI winner = race.getWinner(); // Retrieve the winning horse
+        HorseGUI winner = race.getWinner(); // Retrieve the winning horse & updates stats
         boolean allFallen = true; // Assume all horses have fallen
 
-        // Check each horse
         for (HorseGUI horse : race.getHorses()) {
             if (horse != null && !horse.hasFallen()) {
-                allFallen = false; // At least one horse is still active
-                break; // No need to check further
+                allFallen = false;
+                horse.incrementRaces();
+                if (horse == winner) {
+                    horse.incrementWins();
+                }
             }
         }
 
@@ -241,9 +271,12 @@ public class GUI extends JPanel {
         if (winner != null) {
             race.adjustConfidence(winner, 0.1);
             winnerLabel.setText("And the winner is... " + winner.getName() + "!");
+            winner.recordWinChange();
         } else if (allFallen) {
             winnerLabel.setText("All horses have fallen! No winner.");
         }
+
+        statsButton.setVisible(true);
 
         // Refresh GUI to make sure label updates
         winnerLabel.revalidate();
@@ -307,6 +340,9 @@ public class GUI extends JPanel {
     }
 
     private void showCustomizationOptions() {
+
+        statsPanel.setVisible(false);
+
         customizationPanel.removeAll();  // Clear previous options
 
         // Create a scrollable panel
@@ -376,6 +412,7 @@ public class GUI extends JPanel {
                     horse.setCoatColor((String) colorSelector.getSelectedItem());
                     updateTrackDisplayCustom();
                 });
+
                 setSymbolButton.addActionListener(e -> {
                     horse.setSymbol((Character) symbolSelector.getSelectedItem());
                     updateTrackDisplayCustom();
@@ -419,5 +456,43 @@ public class GUI extends JPanel {
         customizationPanel.repaint();
     }
 
+    private void showStatistics() {
+        statsPanel.removeAll(); // Clear previous stats
+
+        statsPanel.setVisible(true);
+        customizationPanel.setVisible(false);
+
+        // Create a scrollable panel for stats
+        JPanel statsContainer = new JPanel();
+        statsContainer.setLayout(new BoxLayout(statsContainer, BoxLayout.Y_AXIS));
+
+        JScrollPane scrollPane = new JScrollPane(statsContainer);
+        scrollPane.setPreferredSize(new Dimension(400, 300));
+
+        // Calculate finishing time once for all horses
+        double finishingTime = race.calculateFinishingTime();
+        int raceLength = race.getRaceLength();
+
+        // Add stats for each horse
+        for (HorseGUI horse : race.getHorses()) {
+            if (horse != null) {
+                JTextArea horseStats = new JTextArea(horse.getPerformanceSummary(raceLength, finishingTime));
+                horseStats.setEditable(false);
+                horseStats.setBorder(BorderFactory.createTitledBorder(horse.getName()));
+                horseStats.setFont(new Font("Monospaced", Font.PLAIN, 12));
+
+                statsContainer.add(horseStats);
+            }
+        }
+
+        statsPanel.add(scrollPane);
+        statsPanel.setVisible(true);
+        statsPanel.revalidate();
+        statsPanel.repaint();
+    }
+
+
+
 }
+
 

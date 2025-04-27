@@ -3,26 +3,29 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- *A horse race with a configurable number of lanes for given distance
- * 
- * @author Victoria Notarianni
- * @version 2.0
+ * A horse race with a configurable number of lanes
+ *
+ * @author McRaceface
+ * @version 1.1
  */
-public class RaceGUI
-{
+public class RaceGUI {
     private int raceLength;
-    private List<HorseGUI> horses;
+    private List<HorseGUI> horses; // CHANGE: Use a list instead of fixed lanes
     private String unit; // Unit for race length scaling
-    private TrackCondition trackCondition;// CHANGE: Use a list instead of fixed lanes
-    
-   /**
+    private TrackCondition trackCondition;
+    private long raceStartTime; //to track race time
+    private boolean raceStarted = false;
+
+    /**
      * Constructor for objects of class Race
-     * Initially there are no horses in the lanes
+     * Initially, there are no horses in the lanes
      *
-     * @param distance the length of the racetrack
+     * @param distance the length of the racetrack (in metres/yards...)
      * @param numLanes the number of lanes in the race
+     * @param unit the unit used for track length (meters, yards, centimeters)
+     * @param trackCondition the condition of the track (dry, muddy, icy)
      */
-   public RaceGUI(int distance, int numLanes, String unit, TrackCondition trackCondition) // CHANGE: Added numLanes parameter
+    public RaceGUI(int distance, int numLanes, String unit, TrackCondition trackCondition)
     {
         this.unit = unit;
         this.raceLength = scaleLengthByUnit(distance, unit);
@@ -53,94 +56,23 @@ public class RaceGUI
                 return baseLength; // Default is meters (unchanged)
         }
     }
-    
+
     /**
      * Adds a horse to the race in a given lane
-     * 
+     *
      * @param theHorse the horse to be added to the race
      * @param laneNumber the lane that the horse will be added to
      */
-    public void addHorse(HorseGUI theHorse, int laneNumber)
-    {
+    public void addHorse(HorseGUI theHorse, int laneNumber) {
         if (laneNumber > 0 && laneNumber <= horses.size()) // CHANGE: Validate lane number
         {
+            theHorse.recordInitialConfidence();
             horses.set(laneNumber - 1, theHorse); // CHANGE: Adjust index for zero-based list
-        }
-        else
-        {
+        } else {
             System.out.println("Cannot add horse to lane " + laneNumber + " because there is no such lane");
         }
-
     }
-    
-    /**
-     * Start the race
-     * The horse are brought to the start and
-     * then repeatedly moved forward until the 
-     * race is finished
-     */
-    /*public void startRace()
-    {
-        boolean finished = false;
 
-        for (HorseGUI horse : horses) {
-            if (horse != null) {
-                horse.goBackToStart();
-            }
-        }
-        printRace(); // Show horses at position 0 before any movement
-        int activeCount = 0; //no of horses not fallen
-
-        while (!finished)
-        {
-            //Move horse
-            for (HorseGUI horse : horses) {
-                if (horse != null) {
-                    moveHorse(horse);
-                }
-            }
-
-            // Check if any horse won by crossing the finish line
-            HorseGUI winner = null;
-            for (HorseGUI horse : horses) {
-                if (horse != null && raceWonBy(horse)) {
-                    winner = horse;
-                    break;
-                }
-            }
-
-            if (winner != null) {
-                adjustConfidence(winner, 0.1); //  Increase confidence for winner
-                finished = true; //Race ends & loop ends
-            } else {
-                // Reset active count for the current loop
-                activeCount = 0;
-                
-                // Count horses that haven't fallen
-                for (HorseGUI horse : horses) {
-                    if (horse != null && !horse.hasFallen()) {
-                        activeCount++;
-                    }
-                }
-                // If all horses have fallen
-                if (activeCount == 0) {
-                    finished = true;
-                }
-            }
-
-            //wait for 500 milliseconds
-            try {
-                TimeUnit.MILLISECONDS.sleep(500);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-
-            printRace();
-
-        }
-
-        printWinner(activeCount);
-    } */
 
     public void adjustConfidenceForTrack(HorseGUI horse) {
         double confidenceAdjustment = 0.0;
@@ -158,6 +90,7 @@ public class RaceGUI
         }
 
         adjustConfidence(horse, confidenceAdjustment);
+        horse.recordTrackConditionChange();
     }
 
 
@@ -213,34 +146,70 @@ public class RaceGUI
             if (Math.random() < (0.1 * theHorse.getConfidence() * theHorse.getConfidence() * fallRiskModifier)) {
                 theHorse.fall();
                 adjustConfidence(theHorse, -0.1);
+                theHorse.recordFallChange();
             }
         }
     }
 
-    // Adjust horse confidence while ensuring it stays between 0 and 1
+    /**
+     * Adjusts horse confidence while ensuring it stays between 0.1 and 0.9
+     *
+     * @param horse the horse whose confidence is adjusted
+     * @param adjustment the amount to adjust confidence by
+     */
     public void adjustConfidence(HorseGUI horse, double adjustment) {
         double newConfidence = Math.max(0.1, Math.min(0.9, horse.getConfidence() + adjustment));
-        newConfidence =   Math.round(newConfidence * 100.0) / 100.0;
+        newConfidence = Math.round(newConfidence * 100.0) / 100.0; // Round to 2 decimal places
         horse.setConfidence(newConfidence);
     }
 
+
     public HorseGUI getWinner() {
+        HorseGUI winner = null;
+        double raceDuration = calculateFinishingTime();
+
+        // Reset all horses' tracking first
         for (HorseGUI horse : horses) {
-            if (horse != null && raceWonBy(horse)) {
-                return horse;  // Returns the winning horse
+            if (horse != null) {
+                horse.resetRaceTracking();
             }
         }
-        return null;  // No winner yet
+        // First pass to find the winner
+        for (HorseGUI horse : horses) {
+            if (horse != null && raceWonBy(horse)) {
+                winner = horse;
+                break;
+            }
+        }
+
+        // Update statistics for ALL horses
+        for (HorseGUI horse : horses) {
+            if (horse != null) {
+                horse.incrementRaces(); // Count this race for all horses
+
+                if (horse == winner) {
+                    horse.incrementWins();
+                }
+
+                double speed = (raceDuration > 0) ?
+                        horse.getDistanceTravelled() / raceDuration : 0;
+
+                horse.addFinishingTime(raceDuration);
+                horse.addSpeed(speed);
+
+            }
+        }
+
+        return winner;
     }
-        
+
     /**
      * Determines if a horse has won the race
      *
      * @param theHorse The horse we are testing
      * @return true if the horse has won, false otherwise.
      */
-    private boolean raceWonBy(HorseGUI theHorse)
-    {
+    private boolean raceWonBy(HorseGUI theHorse) {
         return theHorse.getDistanceTravelled() >= raceLength; // CHANGE: Allow distance to exceed race length
     }
 
@@ -281,8 +250,6 @@ public class RaceGUI
                 // Add equipment symbols next to horse name
 
                 lane.append(getBreedSymbol(horse.getBreed()));
-
-                // Add equipment symbols next to horse name
                 lane.append(" [");
 
                 // Saddle symbol
@@ -329,6 +296,21 @@ public class RaceGUI
         }
     }
 
+    /**
+     * Generates a repeated string of a given character
+     *
+     * @param aChar the character to repeat
+     * @param times the number of repetitions
+     * @return the formatted string
+     */
+    private String multiplePrint(char aChar, int times) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < times; i++) {
+            result.append(aChar);
+        }
+        return result.toString();
+    }
+
     public boolean isFinished() {
         boolean anyHorseFinished = false;
         boolean allHorsesFallen = true;
@@ -347,20 +329,6 @@ public class RaceGUI
         return anyHorseFinished || allHorsesFallen;
     }
 
-    /**
-     * Generates a repeated string of a given character
-     *
-     * @param aChar the character to repeat
-     * @param times the number of repetitions
-     * @return the formatted string
-     */
-    private String multiplePrint(char aChar, int times) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < times; i++) {
-            result.append(aChar);
-        }
-        return result.toString();
-    }
 
     public List<HorseGUI> getHorses() {
         if (horses == null) {
@@ -381,4 +349,30 @@ public class RaceGUI
         }
         return null; // No horse in this lane or invalid lane number
     }
+
+    //start the race timer
+    public void startRaceTimer() {
+        this.raceStartTime = System.currentTimeMillis();
+        this.raceStarted = true;
+    }
+    //calculate finishing time
+    public double calculateFinishingTime() {
+        if (!raceStarted) return 0.0;
+        return (System.currentTimeMillis() - raceStartTime) / 1000.0; // in seconds
+    }
+
+    public int getRaceLength() {
+        return raceLength;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public TrackCondition getTrackCondition() {
+        return trackCondition;
+    }
+
+
+
 }
