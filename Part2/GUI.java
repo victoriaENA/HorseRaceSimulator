@@ -21,8 +21,10 @@ public class GUI extends JPanel {
     private JPanel customizationPanel;
     private JButton statsButton;
     private JPanel statsPanel;
+    private JPanel sidePanel;  // <-- add this at the top with other fields
 
 
+    //Constructor
     public GUI() {
         setLayout(new BorderLayout());
 
@@ -85,7 +87,7 @@ public class GUI extends JPanel {
         centerPanel.add(new JScrollPane(trackDisplay), BorderLayout.CENTER);
 
         // Create a wrapper panel to swap between customization and stats
-        JPanel sidePanel = new JPanel(new CardLayout());
+        sidePanel = new JPanel(new CardLayout()); // <- now you have a global reference
         sidePanel.add(customizationPanel, "Customization");
         sidePanel.add(statsPanel, "Statistics");
 
@@ -132,10 +134,7 @@ public class GUI extends JPanel {
         // Event: startRace on start
         startRaceButton.addActionListener(e -> {
             startRace();
-            customizeButton.setVisible(false);
-            statsPanel.setVisible(false);
-            statsButton.setVisible(false);
-            customizationPanel.setVisible(false);
+
         });
 
         // Event: customizeButton clicked
@@ -204,7 +203,9 @@ public class GUI extends JPanel {
 
     private void startRace() {
 
-        customizationPanel.setVisible(false);
+        sidePanel.setVisible(false);
+        customizeButton.setVisible(false);
+        statsButton.setVisible(false);
 
         raceEnded = false;
         winnerLabel.setText(" ");
@@ -243,6 +244,7 @@ public class GUI extends JPanel {
                     raceTimer.stop();
                     displayWinner();
                     customizeButton.setVisible(true);
+                    statsButton.setVisible(true);
                 }
 
                 updateTrackDisplayCustom();
@@ -276,7 +278,6 @@ public class GUI extends JPanel {
             winnerLabel.setText("All horses have fallen! No winner.");
         }
 
-        statsButton.setVisible(true);
 
         // Refresh GUI to make sure label updates
         winnerLabel.revalidate();
@@ -342,6 +343,8 @@ public class GUI extends JPanel {
     private void showCustomizationOptions() {
 
         statsPanel.setVisible(false);
+        sidePanel.setVisible(true);
+
 
         customizationPanel.removeAll();  // Clear previous options
 
@@ -451,16 +454,16 @@ public class GUI extends JPanel {
         // Wrap the entire customization panel in a scrollable view
         customizationPanel.setLayout(new BorderLayout());
         customizationPanel.add(scrollPane, BorderLayout.CENTER);
-        customizationPanel.setVisible(!customizationPanel.isVisible());
         customizationPanel.revalidate();
         customizationPanel.repaint();
     }
 
     private void showStatistics() {
         statsPanel.removeAll(); // Clear previous stats
-
         statsPanel.setVisible(true);
         customizationPanel.setVisible(false);
+        sidePanel.setVisible(true);
+
 
         // Create a scrollable panel for stats
         JPanel statsContainer = new JPanel();
@@ -486,7 +489,6 @@ public class GUI extends JPanel {
         }
 
         statsPanel.add(scrollPane);
-        statsPanel.setVisible(true);
         statsPanel.revalidate();
         statsPanel.repaint();
     }
