@@ -3,7 +3,7 @@ public class Main {
         // Create horses 
         Horse horse1 = new Horse('A', "Blaze", 0.5);
         Horse horse2 = new Horse('B', "Lightning", 0.6);
-        Horse horse3 = new Horse('C', "Ray", 0.9);
+        Horse horse3 = new Horse('C', "Ray", 0.7);
 
         Race race = new Race(20, 4);
         race.addHorse(horse1, 1);
