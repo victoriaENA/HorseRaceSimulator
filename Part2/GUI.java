@@ -21,7 +21,7 @@ public class GUI extends JPanel {
     private JPanel customizationPanel;
     private JButton statsButton;
     private JPanel statsPanel;
-    private JPanel sidePanel;  // <-- add this at the top with other fields
+    private JPanel sidePanel;  //
 
 
     //Constructor
@@ -30,11 +30,11 @@ public class GUI extends JPanel {
 
         // Top Panel for input
         JPanel inputPanel = new JPanel(new FlowLayout());
-        inputPanel.add(new JLabel("Number of lanes:"));
+        inputPanel.add(new JLabel("Number of lanes(max 40):"));
         laneField = new JTextField("5", 5);
         inputPanel.add(laneField);
 
-        inputPanel.add(new JLabel("Track length:"));
+        inputPanel.add(new JLabel("Track length(max 60):"));
         lengthField = new JTextField("30", 5);
         inputPanel.add(lengthField);
 
@@ -98,7 +98,7 @@ public class GUI extends JPanel {
         winnerLabel = new JLabel(" "); // Empty at first
         winnerLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         winnerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        add(winnerLabel, BorderLayout.SOUTH); // Place it at the bottom of the race display
+        add(winnerLabel, BorderLayout.SOUTH);
 
         // Event: create track on setTrack
         setTrackButton.addActionListener(e -> {
@@ -156,7 +156,7 @@ public class GUI extends JPanel {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Horse Race Simulator");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(800, 600);
+            frame.setSize(1000, 700);
 
             GUI racePanel = new GUI();
             frame.add(racePanel);
@@ -178,8 +178,11 @@ public class GUI extends JPanel {
         String selectedCondition = ((String) trackSelector.getSelectedItem()).toUpperCase();
         TrackCondition trackCondition = TrackCondition.valueOf(selectedCondition);
 
-        // Ensure minimum lanes are 2
-        lanes = Math.max(lanes, 2);
+        // Enforce minimum and maximum values
+        lanes = Math.max(2, Math.min(40, lanes));  // Between 2 and 40
+        length = Math.min(60, length);
+        laneField.setText(String.valueOf(lanes));
+        lengthField.setText(String.valueOf(length));
 
         race = new RaceGUI(length, lanes, unit, trackCondition);
 
