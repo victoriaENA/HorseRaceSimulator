@@ -186,12 +186,13 @@ public class GUI extends JPanel {
         for (int lane = 1; lane <= lanes; lane++) {
 
             HorseGUI horse = new HorseGUI(
-                    "Horse " + (lane),
+                    "Horse " + lane,
                     HorseBreed.STANDARDBRED,
                     "Black",
-                    '♞',
-                    Math.round((0.2 + (Math.random() * 0.6)) * 10) / 10.0
+                    '\u265E',
+                    (Math.round((0.2 + (Math.random() * 0.6)) * 10) / 10.0)
             );
+
 
             race.addHorse(horse, lane);
 
@@ -322,13 +323,24 @@ public class GUI extends JPanel {
             HorseGUI horse = race.getHorseInLane(i ); // Ensure `i` maps to correct lane number
 
             if (horse != null ) {
-                Color color = switch (horse.getCoatColor().toLowerCase()) {
-                    case "black" -> Color.BLACK;
-                    case "white" -> Color.LIGHT_GRAY;
-                    case "brown" -> new Color(139, 69, 19);
-                    case "grey" -> Color.GRAY;
-                    default -> Color.BLACK;
-                };
+                Color color;
+                switch (horse.getCoatColor().toLowerCase()) {
+                    case "black":
+                        color = Color.BLACK;
+                        break;
+                    case "white":
+                        color = Color.LIGHT_GRAY;
+                        break;
+                    case "brown":
+                        color = new Color(139, 69, 19);
+                        break;
+                    case "grey":
+                        color = Color.GRAY;
+                        break;
+                    default:
+                        color = Color.BLACK;
+                        break;
+                }
                 laneLabel.setForeground(color);
             }
 
@@ -357,7 +369,7 @@ public class GUI extends JPanel {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         // Array of available symbols (chess pieces and others)
-        Character[] symbols = {'♞', '♚', '♛', '★', '⚡'};
+        Character[] symbols = {'\u265E', '\u265A', '\u265B', '\u2605', '\u26A1'};
 
         for (HorseGUI horse : race.getHorses()) {
             if (horse != null) {

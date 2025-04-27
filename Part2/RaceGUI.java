@@ -281,8 +281,8 @@ public class RaceGUI {
             case HEAVY_SADDLE: return "H\uD83C\uDFA0 ";
             case STEEL_SHOES: return "S\uD83D\uDC5F ";
             case ALUMINUM_SHOES: return "A\uD83D\uDC5F ";
-            case RACING_BLANKET: return "🎽";
-            case LUCKY_HAT: return "🎩";
+            case RACING_BLANKET: return "\uD83C\uDFBD";
+            case LUCKY_HAT: return "\uD83C\uDFA9";
             default: return "";
         }
     }
@@ -290,7 +290,7 @@ public class RaceGUI {
     private String getBreedSymbol(HorseBreed breed) {
 
         switch (breed) {
-            case ARABIAN: return "⚜\uFE0F";
+            case ARABIAN: return "\u269C";
             case MUSTANG: return "\uD83C\uDF35";
             default: return "";
         }

@@ -324,7 +324,7 @@ public class HorseGUI {
         if (currentRaceConfidenceChanges.isEmpty()) {
             return "Confidence: None";
         }
-        return "Confidence: " + String.join(" → ", currentRaceConfidenceChanges);
+        return "Confidence: " + String.join(" -> ", currentRaceConfidenceChanges);
     }
 
 }
