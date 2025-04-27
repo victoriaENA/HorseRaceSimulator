@@ -301,7 +301,6 @@ public class GUI extends JPanel {
             JLabel laneLabel = new JLabel(line);
 
             laneLabel.setFont(new Font("Monospaced", Font.PLAIN, 20));
-
             trackDisplay.add(laneLabel);
         }
 

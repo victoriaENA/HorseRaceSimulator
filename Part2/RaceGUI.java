@@ -236,7 +236,7 @@ public class RaceGUI {
             lane.append(multiplePrint(' ', spacesBefore));
 
             // Add horse symbol or fallen marker
-            lane.append((horse != null) ? (horse.hasFallen() ? "X" : horse.getSymbol()) : " ");
+            lane.append((horse != null) ? (horse.hasFallen() ? "\u2718" : horse.getSymbol()) : " ");
 
             // Add spaces after the horse
             lane.append(multiplePrint(' ', spacesAfter));
@@ -269,6 +269,21 @@ public class RaceGUI {
 
         // Bottom border
         trackDisplay.add(multiplePrint('=', trackWidth));
+
+        //Instructions
+        trackDisplay.add(" ");
+        trackDisplay.add(" ");
+        trackDisplay.add("GAME TIPS!");
+        trackDisplay.add("- Track Condition affects horse confidence at the beginning of every race!");
+        trackDisplay.add("  * Dry: +0.1 | Muddy: -0.1 | Icy: -0.2");
+        trackDisplay.add("- Track Condition affects speed and stability(fall risk)!");
+        trackDisplay.add("  * Dry: faster & more stable | Muddy: slower & less stable | Icy: slower & much less stable ");
+        trackDisplay.add("- Breed affects endurance!");
+        trackDisplay.add("  * Standardbred: default endurance | Mustang: medium endurance | Arabian: highest endurance");
+        trackDisplay.add("- Equipment and accessories affect speed and stability!");
+        trackDisplay.add("  * Standard Saddle: default | Light Saddle: faster & less stable | Heavy Saddle: slower & more stable");
+        trackDisplay.add("  * Standard Shoes: default | Aluminum shoes: faster & less stable | Steel shoes: slower & more stable");
+        trackDisplay.add("  * Lucky Hat: faster & more stable | Racing blanket: more stable ");
 
         return trackDisplay;
     }

@@ -300,7 +300,7 @@ public class HorseGUI {
      * Records confidence change after track condition adjustment
      */
     public void recordTrackConditionChange() {
-        currentRaceConfidenceChanges.add(String.format("After track: %.2f", this.confidence));
+        currentRaceConfidenceChanges.add(String.format("Track condition: %.2f", this.confidence));
     }
 
     /**
